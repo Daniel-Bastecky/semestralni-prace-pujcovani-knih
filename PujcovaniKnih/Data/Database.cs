@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PujcovaniKnih.Data
 {
-    internal class Database
+    public class Database
     {
     }
 }

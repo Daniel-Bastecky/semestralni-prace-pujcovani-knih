@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PujcovaniKnih.Commands
 {
-    internal class RelayCommand
+    public class RelayCommand
     {
     }
 }

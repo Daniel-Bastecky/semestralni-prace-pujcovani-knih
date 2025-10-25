@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PujcovaniKnih.ViewModels
 {
-    internal class LoansViewModel
+    public class LoansViewModel
     {
     }
 }

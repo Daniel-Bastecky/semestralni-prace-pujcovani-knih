@@ -8,5 +8,6 @@ namespace PujcovaniKnih.Commands
 {
     public class RelayCommand
     {
+
     }
 }

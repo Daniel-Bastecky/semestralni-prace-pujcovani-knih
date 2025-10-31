@@ -8,5 +8,6 @@ namespace PujcovaniKnih.ViewModels
 {
     public class BooksViewModel
     {
+
     }
 }

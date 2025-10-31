@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace PujcovaniKnih.ViewModels
 {
-    internal class MainViewModel
+    public class MainViewModel
     {
+
     }
 }

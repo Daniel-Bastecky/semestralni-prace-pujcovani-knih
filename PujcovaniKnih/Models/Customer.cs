@@ -6,7 +6,14 @@ using System.Threading.Tasks;
 
 namespace PujcovaniKnih.Models
 {
-    internal class Customer
+    /// <summary>
+    /// Represents a customer in the library.
+    /// </summary>
+    public class Customer
     {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string? Email { get; set; }
+        public string Phone { get; set; }
     }
 }

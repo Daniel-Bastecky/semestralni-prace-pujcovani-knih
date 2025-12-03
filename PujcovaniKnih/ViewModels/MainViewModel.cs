@@ -1,4 +1,5 @@
 ﻿using PujcovaniKnih.Commands;
+using PujcovaniKnih.Views;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace PujcovaniKnih.ViewModels
 {
@@ -14,12 +16,12 @@ namespace PujcovaniKnih.ViewModels
     /// </summary>
     public class MainViewModel : INotifyPropertyChanged
     {
-        public BooksViewModel BooksVM { get; set; } = new();
-        public CustomersViewModel CustomersVM { get; set; } = new();
-        public LoansViewModel LoansVM { get; set; } = new();
+        public BooksViewModel BooksVM { get;} = new();
+        public CustomersViewModel CustomersVM { get;} = new();
+        public LoansViewModel LoansVM { get;} = new();
 
-        private object? currentView;
-        public object? CurrentView
+        private object currentView;
+        public object CurrentView
         {
             get => currentView;
             set
@@ -37,7 +39,6 @@ namespace PujcovaniKnih.ViewModels
         public MainViewModel()
         {
             CurrentView = BooksVM;
-
             ShowBooksCommand = new RelayCommand(_ => CurrentView = BooksVM);
             ShowCustomersCommand = new RelayCommand(_ => CurrentView = CustomersVM);
             ShowLoansCommand = new RelayCommand(_ => CurrentView = LoansVM);

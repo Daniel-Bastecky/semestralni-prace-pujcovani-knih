@@ -1,4 +1,5 @@
-﻿using PujcovaniKnih.Data;
+﻿using PujcovaniKnih.Commands;
+using PujcovaniKnih.Data;
 using PujcovaniKnih.Models;
 using System;
 using System.Collections.Generic;
@@ -31,9 +32,23 @@ namespace PujcovaniKnih.ViewModels
             }
         }
 
+        public RelayCommand AddCustomerCommand { get; }
+        public RelayCommand UpdateCustomerCommand { get; }
+        public RelayCommand DeleteCustomerCommand { get; }
+
         public CustomersViewModel()
         {
             LoadCustomers();
+
+            AddCustomerCommand = new RelayCommand(_ => AddCustomer(SelectedCustomer));
+            UpdateCustomerCommand = new RelayCommand(_ => UpdateCustomer(SelectedCustomer));
+            DeleteCustomerCommand = new RelayCommand(_ =>
+            {
+                if (SelectedCustomer != null)
+                    DeleteCustomer(SelectedCustomer.Id);
+            });
+
+            SelectedCustomer = new Customer();
         }
 
         public void LoadCustomers()

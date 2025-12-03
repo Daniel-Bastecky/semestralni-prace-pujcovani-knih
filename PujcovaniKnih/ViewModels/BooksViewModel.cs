@@ -1,4 +1,5 @@
-﻿using PujcovaniKnih.Data;
+﻿using PujcovaniKnih.Commands;
+using PujcovaniKnih.Data;
 using PujcovaniKnih.Models;
 using System;
 using System.Collections.Generic;
@@ -32,9 +33,42 @@ namespace PujcovaniKnih.ViewModels
             }
         }
 
+        // commands for buttons
+        public RelayCommand AddBookCommand { get; }
+        public RelayCommand UpdateBookCommand { get; }
+        public RelayCommand DeleteBookCommand { get; }
+
         public BooksViewModel()
         {
             LoadBooks();
+
+            AddBookCommand = new RelayCommand(_ =>
+            {
+                if (SelectedBook != null)
+                {
+                    AddBook(SelectedBook);
+                    SelectedBook = new Book(); // reset
+                }
+            });
+
+            UpdateBookCommand = new RelayCommand(_ =>
+            {
+                if (SelectedBook != null)
+                {
+                    UpdateBook(SelectedBook);
+                }
+            });
+
+            DeleteBookCommand = new RelayCommand(_ =>
+            {
+                if (SelectedBook != null)
+                {
+                    DeleteBook(SelectedBook.Id);
+                    SelectedBook = new Book(); // reset
+                }
+            });
+
+            SelectedBook = new Book();
         }
 
         public void LoadBooks()

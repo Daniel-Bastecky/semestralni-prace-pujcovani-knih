@@ -1,0 +1,78 @@
+﻿<UserControl x:Class="PujcovaniKnih.Views.LoansView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="400" d:DesignWidth="800">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Správa výpůjček" FontSize="24" FontWeight="Bold" Margin="0,0,0,20" Grid.Row="0"/>
+        
+        <DataGrid Grid.Row="1" ItemsSource="{Binding Loans}"
+                  SelectedItem="{Binding SelectedLoan}" 
+                  AutoGenerateColumns="False" CanUserAddRows="False"
+                  IsReadOnly="True"
+                  SelectionMode="Single"
+                  Margin="0,0,0,20">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID Výpůjčky" Binding="{Binding Id}" Width="80"/>
+                <DataGridTextColumn Header="ID Zákazníka" Binding="{Binding CustomerId}" Width="100"/>
+                <DataGridTextColumn Header="ID Knihy" Binding="{Binding BookId}" Width="80"/>
+
+                <DataGridTextColumn Header="Půjčeno" Binding="{Binding DateBorrowed, StringFormat=dd.MM.yyyy}" Width="*"/>
+                <DataGridTextColumn Header="Vráceno" Binding="{Binding DateReturned, StringFormat=dd.MM.yyyy, TargetNullValue='-'}" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <Border Grid.Row="2" BorderBrush="Gray" BorderThickness="1" CornerRadius="5" Padding="10" Background="#f9f9f9">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="Zákazník:" VerticalAlignment="Center" Margin="0,0,10,10" Grid.Row="0" Grid.Column="0"/>
+
+                <ComboBox Grid.Row="0" Grid.Column="1" Margin="0,0,20,10"
+                          ItemsSource="{Binding AllCustomers}"
+                          DisplayMemberPath="Name"
+                          SelectedValuePath="Id"
+                          SelectedValue="{Binding SelectedLoan.CustomerId}"/>
+
+                <TextBlock Text="Kniha:" VerticalAlignment="Center" Margin="0,0,10,10" Grid.Row="0" Grid.Column="2"/>
+
+                <ComboBox Grid.Row="0" Grid.Column="3" Margin="0,0,0,10"
+                          ItemsSource="{Binding AllBooks}"
+                          DisplayMemberPath="Title"
+                          SelectedValuePath="Id"
+                          SelectedValue="{Binding SelectedLoan.BookId}"/>
+
+                <TextBlock Text="Datum půjčení:" VerticalAlignment="Center" Margin="0,0,10,10" Grid.Row="1" Grid.Column="0"/>
+                <DatePicker SelectedDate="{Binding SelectedLoan.DateBorrowed}" Grid.Row="1" Grid.Column="1" Margin="0,0,20,10"/>
+
+                <TextBlock Text="Datum vrácení:" VerticalAlignment="Center" Margin="0,0,10,10" Grid.Row="1" Grid.Column="2"/>
+                <DatePicker SelectedDate="{Binding SelectedLoan.DateReturned}" Grid.Row="1" Grid.Column="3" Margin="0,0,0,10"/>
+
+                <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.ColumnSpan="4" HorizontalAlignment="Right" Margin="0,10,0,0">
+                    <Button Content="Půjčit (Nová)" Width="100" Margin="0,0,10,0" Command="{Binding AddLoanCommand}" Background="#DDDDDD"/>
+                    <Button Content="Uložit změny / Vrátit" Width="140" Margin="0,0,10,0" Command="{Binding UpdateLoanCommand}" Background="#DDDDDD"/>
+                    <Button Content="Smazat záznam" Width="100" Command="{Binding DeleteLoanCommand}" Background="#FFCCCC"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

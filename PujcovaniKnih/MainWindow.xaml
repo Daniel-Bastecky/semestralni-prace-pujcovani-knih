@@ -3,10 +3,36 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:PujcovaniKnih"
+        xmlns:vm="clr-namespace:PujcovaniKnih.ViewModels"
+        xmlns:local="clr-namespace:PujcovaniKnih.Views"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
 
-    </Grid>
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
+
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type vm:BooksViewModel}">
+            <local:BooksView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:CustomersViewModel}">
+            <local:CustomersView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:LoansViewModel}">
+            <local:LoansView/>
+        </DataTemplate>
+    </Window.Resources>
+
+    <DockPanel>
+        <!-- Top buttons to switch views -->
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="5">
+            <Button Content="Books" Width="75" Margin="0,0,5,0" Command="{Binding ShowBooksCommand}"/>
+            <Button Content="Customers" Width="75" Margin="0,0,5,0" Command="{Binding ShowCustomersCommand}"/>
+            <Button Content="Loans" Width="75" Command="{Binding ShowLoansCommand}"/>
+        </StackPanel>
+
+        <!-- Content area where current view is displayed -->
+        <ContentControl Content="{Binding CurrentView}"/>
+    </DockPanel>
 </Window>

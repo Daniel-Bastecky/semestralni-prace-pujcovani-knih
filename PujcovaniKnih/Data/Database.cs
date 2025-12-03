@@ -15,7 +15,8 @@ namespace PujcovaniKnih.Data
     /// </summary>
     public static class Database
     {
-        private static string connectionString = "Data Source=library.db;Version=3;";
+        private static readonly string dbPath = System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "library.db");
+        private static readonly string connectionString = $"Data Source={dbPath};";
 
         /// <summary>
         /// Creates the database and creates the tables Books, Customers and Loans.
@@ -242,6 +243,21 @@ namespace PujcovaniKnih.Data
             string query = "DELETE FROM Loans WHERE Id=@Id;";
             using var cmd = new SqliteCommand(query, connection);
             cmd.Parameters.AddWithValue("@Id", loanId);
+            cmd.ExecuteNonQuery();
+        }
+
+        public static void SetBookAvailability(int bookId, bool isAvailable)
+        {
+            using var connection = new SqliteConnection(connectionString);
+            connection.Open();
+
+            string query = "UPDATE Books SET IsAvailable=@IsAvailable WHERE Id=@Id;";
+            using var cmd = new SqliteCommand(query, connection);
+
+            // SQLite nemá boolean, používáme 1 pro true a 0 pro false
+            cmd.Parameters.AddWithValue("@IsAvailable", isAvailable ? 1 : 0);
+            cmd.Parameters.AddWithValue("@Id", bookId);
+
             cmd.ExecuteNonQuery();
         }
     }

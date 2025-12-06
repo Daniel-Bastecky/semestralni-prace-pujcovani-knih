@@ -6,33 +6,34 @@
         xmlns:vm="clr-namespace:PujcovaniKnih.ViewModels"
         xmlns:local="clr-namespace:PujcovaniKnih.Views"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Knihovní systém" Height="550" Width="900"
+        WindowStartupLocation="CenterScreen">
 
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>
 
-    <Window.Resources>
-        <DataTemplate DataType="{x:Type vm:BooksViewModel}">
-            <local:BooksView/>
-        </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:CustomersViewModel}">
-            <local:CustomersView/>
-        </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:LoansViewModel}">
-            <local:LoansView/>
-        </DataTemplate>
-    </Window.Resources>
+    <Grid>
+        <TabControl Margin="5">
+            <TabControl.Resources>
+                <Style TargetType="TabItem">
+                    <Setter Property="FontSize" Value="14"/>
+                    <Setter Property="Padding" Value="10,5"/>
+                    <Setter Property="FontWeight" Value="SemiBold"/>
+                </Style>
+            </TabControl.Resources>
 
-    <DockPanel>
-        <!-- Top buttons to switch views -->
-        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="5">
-            <Button Content="Books" Width="75" Margin="0,0,5,0" Command="{Binding ShowBooksCommand}"/>
-            <Button Content="Customers" Width="75" Margin="0,0,5,0" Command="{Binding ShowCustomersCommand}"/>
-            <Button Content="Loans" Width="75" Command="{Binding ShowLoansCommand}"/>
-        </StackPanel>
+            <TabItem Header="Knihy">
+                <local:BooksView DataContext="{Binding BooksVM}"/>
+            </TabItem>
 
-        <!-- Content area where current view is displayed -->
-        <ContentControl Content="{Binding CurrentView}"/>
-    </DockPanel>
+            <TabItem Header="Zákazníci">
+                <local:CustomersView DataContext="{Binding CustomersVM}"/>
+            </TabItem>
+
+            <TabItem Header="Výpůjčky">
+                <local:LoansView DataContext="{Binding LoansVM}"/>
+            </TabItem>
+        </TabControl>
+    </Grid>
 </Window>

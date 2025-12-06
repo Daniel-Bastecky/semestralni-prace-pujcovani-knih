@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace PujcovaniKnih.ViewModels
 {
@@ -19,11 +20,12 @@ namespace PujcovaniKnih.ViewModels
     /// </summary>
     public class BooksViewModel : INotifyPropertyChanged
     {
-        // Collection of books for data binding in the UI
         public ObservableCollection<Book> Books { get; set; } = new();
 
-        private Book? selectedBook;
-        public Book? SelectedBook
+        private List<Book> allBooksCache = new();
+
+        private Book selectedBook;
+        public Book SelectedBook
         {
             get => selectedBook;
             set
@@ -33,75 +35,85 @@ namespace PujcovaniKnih.ViewModels
             }
         }
 
-        // commands for buttons
-        public RelayCommand AddBookCommand { get; }
-        public RelayCommand UpdateBookCommand { get; }
-        public RelayCommand DeleteBookCommand { get; }
+        private string searchText = "";
+        public string SearchText
+        {
+            get => searchText;
+            set
+            {
+                searchText = value;
+                OnPropertyChanged();
+                FilterBooks();
+            }
+        }
+
+        public RelayCommand SaveCommand { get; }
+        public RelayCommand DeleteCommand { get; }
+        public RelayCommand NewCommand { get; }
 
         public BooksViewModel()
         {
+            SelectedBook = new Book();
             LoadBooks();
 
-            AddBookCommand = new RelayCommand(_ =>
+            SaveCommand = new RelayCommand(_ =>
             {
-                if (SelectedBook != null)
+                if (string.IsNullOrWhiteSpace(SelectedBook.Title) || string.IsNullOrWhiteSpace(SelectedBook.Author))
                 {
-                    AddBook(SelectedBook);
-                    SelectedBook = new Book(); // reset
+                    MessageBox.Show("Vyplňte prosím název a autora.");
+                    return;
                 }
+
+                if (SelectedBook.Id == 0)
+                {
+                    Database.AddBook(SelectedBook);
+                }
+                else
+                {
+                    Database.UpdateBook(SelectedBook);
+                }
+
+                LoadBooks();
+                SelectedBook = new Book();
             });
 
-            UpdateBookCommand = new RelayCommand(_ =>
+            DeleteCommand = new RelayCommand(_ =>
             {
-                if (SelectedBook != null)
+                if (MessageBox.Show("Opravdu smazat?", "Potvrzení", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 {
-                    UpdateBook(SelectedBook);
+                    Database.DeleteBook(SelectedBook.Id);
+                    LoadBooks();
+                    SelectedBook = new Book();
                 }
-            });
+            }, _ => SelectedBook != null && SelectedBook.Id > 0);
 
-            DeleteBookCommand = new RelayCommand(_ =>
+            NewCommand = new RelayCommand(_ =>
             {
-                if (SelectedBook != null)
-                {
-                    DeleteBook(SelectedBook.Id);
-                    SelectedBook = new Book(); // reset
-                }
+                SelectedBook = new Book();
             });
+        }
 
-            SelectedBook = new Book();
+        private void FilterBooks()
+        {
+            Books.Clear();
+            if (string.IsNullOrWhiteSpace(SearchText))
+            {
+                foreach (var b in allBooksCache) Books.Add(b);
+            }
+            else
+            {
+                var filtered = allBooksCache.Where(b =>
+                    b.Title.ToLower().Contains(SearchText.ToLower()) ||
+                    b.Author.ToLower().Contains(SearchText.ToLower()));
+
+                foreach (var b in filtered) Books.Add(b);
+            }
         }
 
         public void LoadBooks()
         {
-            Books.Clear();
-            var books = Database.GetAllBooks();
-            foreach(var book in books)
-            {
-                Books.Add(book);
-            }
-        }
-
-        public void AddBook(Book book)
-        {
-            Database.AddBook(book);
-            LoadBooks();
-        }
-
-        public void UpdateBook(Book book)
-        {
-            if(book == null)
-            {
-                return;
-            }
-
-            Database.UpdateBook(book);
-            LoadBooks();
-        }
-
-        public void DeleteBook(int bookId)
-        {
-            Database.DeleteBook(bookId);
-            LoadBooks();
+            allBooksCache = Database.GetAllBooks();
+            FilterBooks();
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

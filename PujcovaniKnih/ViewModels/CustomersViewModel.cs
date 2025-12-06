@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace PujcovaniKnih.ViewModels
 {
@@ -20,9 +21,10 @@ namespace PujcovaniKnih.ViewModels
     {
         // Collection of customers for data binding in the UI
         public ObservableCollection<Customer> Customers { get; set; } = new();
+        private List<Customer> allCustomersCache = new();
 
-        private Customer? selectedCustomer;
-        public Customer? SelectedCustomer
+        private Customer selectedCustomer;
+        public Customer SelectedCustomer
         {
             get => selectedCustomer;
             set
@@ -32,56 +34,85 @@ namespace PujcovaniKnih.ViewModels
             }
         }
 
-        public RelayCommand AddCustomerCommand { get; }
-        public RelayCommand UpdateCustomerCommand { get; }
-        public RelayCommand DeleteCustomerCommand { get; }
+        private string searchText = "";
+        public string SearchText
+        {
+            get => searchText;
+            set
+            {
+                searchText = value;
+                OnPropertyChanged();
+                FilterCustomers();
+            }
+        }
+
+        public RelayCommand SaveCommand { get; }
+        public RelayCommand DeleteCommand { get; }
+        public RelayCommand NewCommand { get; }
 
         public CustomersViewModel()
         {
+            SelectedCustomer = new Customer();
             LoadCustomers();
 
-            AddCustomerCommand = new RelayCommand(_ => AddCustomer(SelectedCustomer));
-            UpdateCustomerCommand = new RelayCommand(_ => UpdateCustomer(SelectedCustomer));
-            DeleteCustomerCommand = new RelayCommand(_ =>
+            SaveCommand = new RelayCommand(_ =>
             {
-                if (SelectedCustomer != null)
-                    DeleteCustomer(SelectedCustomer.Id);
+                if (string.IsNullOrWhiteSpace(SelectedCustomer.Name) || string.IsNullOrWhiteSpace(SelectedCustomer.Phone))
+                {
+                    MessageBox.Show("Vyplňte prosím jméno a telefon.");
+                    return;
+                }
+
+                if (SelectedCustomer.Id == 0)
+                {
+                    Database.AddCustomer(SelectedCustomer);
+                }
+                else
+                {
+                    Database.UpdateCustomer(SelectedCustomer);
+                }
+
+                LoadCustomers();
+                SelectedCustomer = new Customer();
             });
 
-            SelectedCustomer = new Customer();
+            DeleteCommand = new RelayCommand(_ =>
+            {
+                if (MessageBox.Show("Opravdu smazat zákazníka?", "Potvrzení", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                {
+                    Database.DeleteCustomer(SelectedCustomer.Id);
+                    LoadCustomers();
+                    SelectedCustomer = new Customer();
+                }
+            }, _ => SelectedCustomer != null && SelectedCustomer.Id > 0);
+
+            NewCommand = new RelayCommand(_ =>
+            {
+                SelectedCustomer = new Customer();
+            });
+        }
+
+        private void FilterCustomers()
+        {
+            Customers.Clear();
+            if (string.IsNullOrWhiteSpace(SearchText))
+            {
+                foreach (var c in allCustomersCache) Customers.Add(c);
+            }
+            else
+            {
+                var filtered = allCustomersCache.Where(c =>
+                    c.Name.ToLower().Contains(SearchText.ToLower()) ||
+                    (c.Email != null && c.Email.ToLower().Contains(SearchText.ToLower())));
+
+                foreach (var c in filtered) Customers.Add(c);
+            }
         }
 
         public void LoadCustomers()
         {
-            Customers.Clear();
-            var customers = Database.GetAllCustomers();
-            foreach (var customer in customers)
-            {
-                Customers.Add(customer);
-            }
-        }
-
-        public void AddCustomer(Customer customer)
-        {
-            Database.AddCustomer(customer);
-            LoadCustomers();
-        }
-
-        public void UpdateCustomer(Customer customer)
-        {
-            if (customer == null)
-            {
-                return;
-            }
-
-            Database.UpdateCustomer(customer);
-            LoadCustomers();
-        }
-
-        public void DeleteCustomer(int customerId)
-        {
-            Database.DeleteCustomer(customerId);
-            LoadCustomers();
+            allCustomersCache = Database.GetAllCustomers();
+            FilterCustomers();
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

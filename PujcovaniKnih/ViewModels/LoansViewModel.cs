@@ -19,14 +19,14 @@ namespace PujcovaniKnih.ViewModels
     /// </summary>
     public class LoansViewModel : INotifyPropertyChanged
     {
-        // Collection of loans for data binding in the UI
         public ObservableCollection<Loan> Loans { get; set; } = new();
-
         public ObservableCollection<Book> AllBooks { get; set; } = new();
         public ObservableCollection<Customer> AllCustomers { get; set; } = new();
 
-        private Loan? selectedLoan;
-        public Loan? SelectedLoan
+        private List<Loan> allLoansCache = new();
+
+        private Loan selectedLoan;
+        public Loan SelectedLoan
         {
             get => selectedLoan;
             set
@@ -36,102 +36,126 @@ namespace PujcovaniKnih.ViewModels
             }
         }
 
-        public RelayCommand AddLoanCommand { get; }
-        public RelayCommand UpdateLoanCommand { get; }
-        public RelayCommand DeleteLoanCommand { get; }
+        private bool showActiveOnly = false;
+        public bool ShowActiveOnly
+        {
+            get => showActiveOnly;
+            set
+            {
+                showActiveOnly = value;
+                OnPropertyChanged();
+                FilterLoans();
+            }
+        }
+
+        private string searchText = "";
+        public string SearchText
+        {
+            get => searchText;
+            set
+            {
+                searchText = value;
+                OnPropertyChanged();
+                FilterLoans();
+            }
+        }
+
+        public RelayCommand SaveCommand { get; }
+        public RelayCommand DeleteCommand { get; }
+        public RelayCommand NewCommand { get; }
 
         public LoansViewModel()
         {
+            SelectedLoan = new Loan() { DateBorrowed = DateTime.Now };
             LoadData();
 
-            AddLoanCommand = new RelayCommand(_ =>
+            SaveCommand = new RelayCommand(_ =>
             {
-                if (SelectedLoan == null) return;
-
-                // najde vybranou knihu v seznamu
-                var bookToBorrow = AllBooks.FirstOrDefault(b => b.Id == SelectedLoan.BookId);
-
-                if (bookToBorrow != null)
+                if (SelectedLoan.CustomerId == 0 || SelectedLoan.BookId == 0)
                 {
-                    if (!bookToBorrow.IsAvailable)
+                    MessageBox.Show("Vyberte prosím zákazníka a knihu.");
+                    return;
+                }
+
+                if (SelectedLoan.Id == 0)
+                {
+                    // Nová
+                    var book = AllBooks.FirstOrDefault(b => b.Id == SelectedLoan.BookId);
+                    if (book != null && !book.IsAvailable)
                     {
-                        MessageBox.Show("Tato kniha je již půjčená!", "Chyba", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        MessageBox.Show($"Kniha '{book.Title}' je již půjčená!", "Chyba", MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
                     }
-
-                    AddLoan(SelectedLoan);
-
-                    Database.SetBookAvailability(bookToBorrow.Id, false);
-
-                    LoadData();
-                    SelectedLoan = new Loan() { DateBorrowed = DateTime.Now }; // reset formuláře
+                    Database.AddLoan(SelectedLoan);
+                    Database.SetBookAvailability(SelectedLoan.BookId, false);
                 }
                 else
                 {
-                    MessageBox.Show("Vyberte prosím knihu.", "Chyba", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-            });
-
-            UpdateLoanCommand = new RelayCommand(_ =>
-            {
-                if (SelectedLoan != null)
-                {
-                    UpdateLoan(SelectedLoan);
-
+                    // Editace
+                    Database.UpdateLoan(SelectedLoan);
                     if (SelectedLoan.DateReturned != null)
                     {
                         Database.SetBookAvailability(SelectedLoan.BookId, true);
-                        LoadData();
                     }
                 }
+                LoadData();
+                SelectedLoan = new Loan() { DateBorrowed = DateTime.Now };
             });
 
-            DeleteLoanCommand = new RelayCommand(_ =>
+            DeleteCommand = new RelayCommand(_ =>
             {
-                if (SelectedLoan != null)
+                if (MessageBox.Show("Smazat výpůjčku? Kniha bude uvolněna.", "Potvrzení", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 {
                     Database.SetBookAvailability(SelectedLoan.BookId, true);
-
-                    DeleteLoan(SelectedLoan.Id);
+                    Database.DeleteLoan(SelectedLoan.Id);
                     LoadData();
                     SelectedLoan = new Loan() { DateBorrowed = DateTime.Now };
                 }
-            });
+            }, _ => SelectedLoan != null && SelectedLoan.Id > 0);
 
-            SelectedLoan = new Loan() { DateBorrowed = DateTime.Now };
+            NewCommand = new RelayCommand(_ => SelectedLoan = new Loan() { DateBorrowed = DateTime.Now });
+        }
+
+        private void FilterLoans()
+        {
+            Loans.Clear();
+
+            IEnumerable<Loan> filtered = allLoansCache;
+
+            if (ShowActiveOnly)
+            {
+                filtered = filtered.Where(l => l.DateReturned == null);
+            }
+
+            if (!string.IsNullOrWhiteSpace(SearchText))
+            {
+                string term = SearchText.ToLower();
+                filtered = filtered.Where(loan =>
+                {
+                    var customer = AllCustomers.FirstOrDefault(c => c.Id == loan.CustomerId);
+                    var book = AllBooks.FirstOrDefault(b => b.Id == loan.BookId);
+
+                    bool nameMatch = customer != null && customer.Name.ToLower().Contains(term);
+                    bool bookMatch = book != null && book.Title.ToLower().Contains(term);
+
+                    return nameMatch || bookMatch;
+                });
+            }
+
+            foreach (var loan in filtered) Loans.Add(loan);
         }
 
         public void LoadData()
         {
-            // načtení výpůjček
-            Loans.Clear();
-            var loans = Database.GetAllLoans();
-            foreach (var loan in loans)
-            {
-                Loans.Add(loan);
-            }
-
-            //načtení knih
-            AllBooks.Clear();
-            var books = Database.GetAllBooks();
-            foreach (var book in books) 
-            {
-                AllBooks.Add(book);
-            }
-
-            // načtení zákazníků
             AllCustomers.Clear();
-            var customers = Database.GetAllCustomers();
-            foreach (var customer in customers)
-            {
-                AllCustomers.Add(customer);
-            }
+            foreach (var c in Database.GetAllCustomers()) AllCustomers.Add(c);
+
+            AllBooks.Clear();
+            foreach (var b in Database.GetAllBooks()) AllBooks.Add(b);
+
+            allLoansCache = Database.GetAllLoans();
+            FilterLoans();
         }
-
-        public void AddLoan(Loan loan) => Database.AddLoan(loan);
-        public void UpdateLoan(Loan loan) => Database.UpdateLoan(loan);
-        public void DeleteLoan(int loanId) => Database.DeleteLoan(loanId);
-
 
         public event PropertyChangedEventHandler? PropertyChanged;
         private void OnPropertyChanged([CallerMemberName] string? propertyName = null)

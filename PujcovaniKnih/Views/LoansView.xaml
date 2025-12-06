@@ -13,25 +13,42 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="Správa výpůjček" FontSize="24" FontWeight="Bold" Margin="0,0,0,20" Grid.Row="0"/>
-        
-        <DataGrid Grid.Row="1" ItemsSource="{Binding Loans}"
+        <Grid Grid.Row="0" Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="150"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="Správa výpůjček" FontSize="22" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,20,0"/>
+
+            <CheckBox Grid.Column="2" Content="Jen nevrácené" 
+                      IsChecked="{Binding ShowActiveOnly}" 
+                      VerticalAlignment="Center" Margin="0,0,20,0"/>
+
+            <TextBlock Text="Hledat:" Grid.Column="3" VerticalAlignment="Center" Margin="0,0,10,0"/>
+            <TextBox Grid.Column="4" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
+                     VerticalContentAlignment="Center" Padding="3"/>
+        </Grid>
+
+        <DataGrid Grid.Row="1" ItemsSource="{Binding Loans}" 
                   SelectedItem="{Binding SelectedLoan}" 
                   AutoGenerateColumns="False" CanUserAddRows="False"
                   IsReadOnly="True"
                   SelectionMode="Single"
                   Margin="0,0,0,20">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="ID Výpůjčky" Binding="{Binding Id}" Width="80"/>
-                <DataGridTextColumn Header="ID Zákazníka" Binding="{Binding CustomerId}" Width="100"/>
+                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
+                <DataGridTextColumn Header="ID Zákazníka" Binding="{Binding CustomerId}" Width="80"/>
                 <DataGridTextColumn Header="ID Knihy" Binding="{Binding BookId}" Width="80"/>
-
                 <DataGridTextColumn Header="Půjčeno" Binding="{Binding DateBorrowed, StringFormat=dd.MM.yyyy}" Width="*"/>
-                <DataGridTextColumn Header="Vráceno" Binding="{Binding DateReturned, StringFormat=dd.MM.yyyy, TargetNullValue='-'}" Width="*"/>
+                <DataGridTextColumn Header="Vráceno" Binding="{Binding DateReturned, StringFormat=dd.MM.yyyy, TargetNullValue='---'}" Width="*"/>
             </DataGrid.Columns>
         </DataGrid>
 
-        <Border Grid.Row="2" BorderBrush="Gray" BorderThickness="1" CornerRadius="5" Padding="10" Background="#f9f9f9">
+        <Border Grid.Row="2" BorderBrush="Gray" BorderThickness="1" CornerRadius="5" Padding="15" Background="#f9f9f9">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -42,11 +59,9 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <TextBlock Text="Zákazník:" VerticalAlignment="Center" Margin="0,0,10,10" Grid.Row="0" Grid.Column="0"/>
-
                 <ComboBox Grid.Row="0" Grid.Column="1" Margin="0,0,20,10"
                           ItemsSource="{Binding AllCustomers}"
                           DisplayMemberPath="Name"
@@ -54,7 +69,6 @@
                           SelectedValue="{Binding SelectedLoan.CustomerId}"/>
 
                 <TextBlock Text="Kniha:" VerticalAlignment="Center" Margin="0,0,10,10" Grid.Row="0" Grid.Column="2"/>
-
                 <ComboBox Grid.Row="0" Grid.Column="3" Margin="0,0,0,10"
                           ItemsSource="{Binding AllBooks}"
                           DisplayMemberPath="Title"
@@ -67,10 +81,10 @@
                 <TextBlock Text="Datum vrácení:" VerticalAlignment="Center" Margin="0,0,10,10" Grid.Row="1" Grid.Column="2"/>
                 <DatePicker SelectedDate="{Binding SelectedLoan.DateReturned}" Grid.Row="1" Grid.Column="3" Margin="0,0,0,10"/>
 
-                <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.ColumnSpan="4" HorizontalAlignment="Right" Margin="0,10,0,0">
-                    <Button Content="Půjčit (Nová)" Width="100" Margin="0,0,10,0" Command="{Binding AddLoanCommand}" Background="#DDDDDD"/>
-                    <Button Content="Uložit změny / Vrátit" Width="140" Margin="0,0,10,0" Command="{Binding UpdateLoanCommand}" Background="#DDDDDD"/>
-                    <Button Content="Smazat záznam" Width="100" Command="{Binding DeleteLoanCommand}" Background="#FFCCCC"/>
+                <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.ColumnSpan="4" HorizontalAlignment="Right" Margin="0,45,0,0">
+                    <Button Content="Nová výpůjčka" Command="{Binding NewCommand}" Width="140" Margin="0,0,10,0"/>
+                    <Button Content="Uložit / Vrátit" Command="{Binding SaveCommand}" Width="120" Margin="0,0,10,0" FontWeight="Bold"/>
+                    <Button Content="Smazat" Command="{Binding DeleteCommand}" Width="80" Background="#FFCCCC"/>
                 </StackPanel>
             </Grid>
         </Border>

@@ -4,7 +4,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             d:DesignHeight="400" d:DesignWidth="800">
+             d:DesignHeight="500" d:DesignWidth="800">
 
     <Grid Margin="20">
         <Grid.RowDefinitions>
@@ -41,10 +41,10 @@
                   Margin="0,0,0,20">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
-                <DataGridTextColumn Header="ID Zákazníka" Binding="{Binding CustomerId}" Width="80"/>
-                <DataGridTextColumn Header="ID Knihy" Binding="{Binding BookId}" Width="80"/>
-                <DataGridTextColumn Header="Půjčeno" Binding="{Binding DateBorrowed, StringFormat=dd.MM.yyyy}" Width="*"/>
-                <DataGridTextColumn Header="Vráceno" Binding="{Binding DateReturned, StringFormat=dd.MM.yyyy, TargetNullValue='---'}" Width="*"/>
+                <DataGridTextColumn Header="Zákazník" Binding="{Binding CustomerName}" Width="*"/>
+                <DataGridTextColumn Header="Kniha" Binding="{Binding BookTitle}" Width="*"/>
+                <DataGridTextColumn Header="Půjčeno" Binding="{Binding DateBorrowed, StringFormat=dd.MM.yyyy}" Width="100"/>
+                <DataGridTextColumn Header="Vráceno" Binding="{Binding DateReturned, StringFormat=dd.MM.yyyy, TargetNullValue='---'}" Width="100"/>
             </DataGrid.Columns>
         </DataGrid>
 
@@ -57,6 +57,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
@@ -81,7 +82,7 @@
                 <TextBlock Text="Datum vrácení:" VerticalAlignment="Center" Margin="0,0,10,10" Grid.Row="1" Grid.Column="2"/>
                 <DatePicker SelectedDate="{Binding SelectedLoan.DateReturned}" Grid.Row="1" Grid.Column="3" Margin="0,0,0,10"/>
 
-                <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.ColumnSpan="4" HorizontalAlignment="Right" Margin="0,45,0,0">
+                <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.ColumnSpan="4" HorizontalAlignment="Right" Margin="0,15,0,0">
                     <Button Content="Nová výpůjčka" Command="{Binding NewCommand}" Width="140" Margin="0,0,10,0"/>
                     <Button Content="Uložit / Vrátit" Command="{Binding SaveCommand}" Width="120" Margin="0,0,10,0" FontWeight="Bold"/>
                     <Button Content="Smazat" Command="{Binding DeleteCommand}" Width="80" Background="#FFCCCC"/>

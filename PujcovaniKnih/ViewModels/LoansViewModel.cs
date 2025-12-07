@@ -91,7 +91,6 @@ namespace PujcovaniKnih.ViewModels
                 }
                 else
                 {
-                    // Editace
                     Database.UpdateLoan(SelectedLoan);
                     if (SelectedLoan.DateReturned != null)
                     {
@@ -130,16 +129,9 @@ namespace PujcovaniKnih.ViewModels
             if (!string.IsNullOrWhiteSpace(SearchText))
             {
                 string term = SearchText.ToLower();
-                filtered = filtered.Where(loan =>
-                {
-                    var customer = AllCustomers.FirstOrDefault(c => c.Id == loan.CustomerId);
-                    var book = AllBooks.FirstOrDefault(b => b.Id == loan.BookId);
-
-                    bool nameMatch = customer != null && customer.Name.ToLower().Contains(term);
-                    bool bookMatch = book != null && book.Title.ToLower().Contains(term);
-
-                    return nameMatch || bookMatch;
-                });
+                filtered = filtered.Where(l =>
+                    l.CustomerName.ToLower().Contains(term) ||
+                    l.BookTitle.ToLower().Contains(term));
             }
 
             foreach (var loan in filtered) Loans.Add(loan);
@@ -154,6 +146,16 @@ namespace PujcovaniKnih.ViewModels
             foreach (var b in Database.GetAllBooks()) AllBooks.Add(b);
 
             allLoansCache = Database.GetAllLoans();
+
+            foreach (var loan in allLoansCache)
+            {
+                var customer = AllCustomers.FirstOrDefault(c => c.Id == loan.CustomerId);
+                var book = AllBooks.FirstOrDefault(b => b.Id == loan.BookId);
+
+                loan.CustomerName = customer?.Name ?? "neznámý";
+                loan.BookTitle = book?.Title ?? "neznámá";
+            }
+
             FilterLoans();
         }
 

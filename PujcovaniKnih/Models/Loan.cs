@@ -19,6 +19,9 @@ namespace PujcovaniKnih.Models
         private DateTime dateBorrowed;
         private DateTime? dateReturned;
 
+        private string customerName = string.Empty;
+        private string bookTitle = string.Empty;
+
         public int Id
         {
             get => id;
@@ -47,6 +50,18 @@ namespace PujcovaniKnih.Models
         {
             get => dateReturned;
             set { dateReturned = value; OnPropertyChanged(); }
+        }
+
+        public string CustomerName
+        {
+            get => customerName;
+            set { customerName = value; OnPropertyChanged(); }
+        }
+
+        public string BookTitle
+        {
+            get => bookTitle;
+            set { bookTitle = value; OnPropertyChanged(); }
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

@@ -16,7 +16,7 @@ namespace PujcovaniKnih.Models
         private int id;
         private string title = string.Empty;
         private string author = string.Empty;
-        private bool isAvailable;
+        private bool isAvailable = true;
 
         public int Id
         {

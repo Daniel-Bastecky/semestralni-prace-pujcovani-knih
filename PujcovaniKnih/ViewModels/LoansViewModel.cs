@@ -77,6 +77,13 @@ namespace PujcovaniKnih.ViewModels
                     return;
                 }
 
+                if (SelectedLoan.DateReturned.HasValue && SelectedLoan.DateReturned.Value.Date < SelectedLoan.DateBorrowed.Date)
+                {
+                    MessageBox.Show("Datum vrácení nemůže být dříve než datum půjčení!",
+                                    "Chyba data", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
                 if (SelectedLoan.Id == 0)
                 {
                     // Nová

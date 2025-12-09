@@ -79,6 +79,15 @@ namespace PujcovaniKnih.ViewModels
 
             DeleteCommand = new RelayCommand(_ =>
             {
+                bool isUsed = Database.GetAllLoans().Any(l => l.BookId == SelectedBook.Id);
+
+                if (isUsed)
+                {
+                    MessageBox.Show($"Knihu '{SelectedBook.Title}' nelze smazat, protože je součástí existující výpůjčky.\n\n",
+                                    "Nelze smazat", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
                 if (MessageBox.Show("Opravdu smazat?", "Potvrzení", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 {
                     Database.DeleteBook(SelectedBook.Id);

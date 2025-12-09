@@ -78,6 +78,15 @@ namespace PujcovaniKnih.ViewModels
 
             DeleteCommand = new RelayCommand(_ =>
             {
+                bool isUsed = Database.GetAllLoans().Any(l => l.CustomerId == SelectedCustomer.Id);
+
+                if (isUsed)
+                {
+                    MessageBox.Show($"Zákazníka '{SelectedCustomer.Name}' nelze smazat, protože má přiřazené výpůjčky.\n\n",
+                                    "Nelze smazat", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
                 if (MessageBox.Show("Opravdu smazat zákazníka?", "Potvrzení", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 {
                     Database.DeleteCustomer(SelectedCustomer.Id);

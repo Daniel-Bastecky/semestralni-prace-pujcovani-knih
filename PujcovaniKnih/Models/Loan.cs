@@ -64,6 +64,9 @@ namespace PujcovaniKnih.Models
             set { bookTitle = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// Event that notifies the UI when a property value changes.
+        /// </summary>
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {

@@ -12,7 +12,7 @@ using System.Windows.Controls;
 namespace PujcovaniKnih.ViewModels
 {
     /// <summary>
-    /// Main ViewModel that holds all other ViewModels and controls which one is currently displayed.
+    /// The root ViewModel that manages navigation between different views (Books, Customers, Loans).
     /// </summary>
     public class MainViewModel : INotifyPropertyChanged
     {
@@ -31,7 +31,6 @@ namespace PujcovaniKnih.ViewModels
             }
         }
 
-        // Commands to switch views
         public RelayCommand ShowBooksCommand { get; }
         public RelayCommand ShowCustomersCommand { get; }
         public RelayCommand ShowLoansCommand { get; }

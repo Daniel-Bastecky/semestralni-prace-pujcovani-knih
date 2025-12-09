@@ -14,12 +14,10 @@ using System.Windows;
 namespace PujcovaniKnih.ViewModels
 {
     /// <summary>
-    /// ViewModel responsible for managing customers,
-    /// providing CRUD operations and notifying the UI of changes.
+    /// Manages the logic for the Customers section, including loading, filtering, and CRUD operations.
     /// </summary>
     public class CustomersViewModel : INotifyPropertyChanged
     {
-        // Collection of customers for data binding in the UI
         public ObservableCollection<Customer> Customers { get; set; } = new();
         private List<Customer> allCustomersCache = new();
 
@@ -30,7 +28,7 @@ namespace PujcovaniKnih.ViewModels
             set
             {
                 selectedCustomer = value;
-                OnPropertyChanged();    // Notify the UI that the property has changed
+                OnPropertyChanged();
             }
         }
 

@@ -14,9 +14,7 @@ using System.Windows;
 namespace PujcovaniKnih.ViewModels
 {
     /// <summary>
-    /// ViewModel responsible for managing the library's book collection,
-    /// providing operations to load, add, update, and delete books,
-    /// and notifying the UI about any data changes for proper binding.
+    /// Manages the logic for the Books section, including loading, filtering, and CRUD operations.
     /// </summary>
     public class BooksViewModel : INotifyPropertyChanged
     {
@@ -31,7 +29,7 @@ namespace PujcovaniKnih.ViewModels
             set
             {
                 selectedBook = value;
-                OnPropertyChanged();    // Notify the UI that the property has changed
+                OnPropertyChanged();
             }
         }
 

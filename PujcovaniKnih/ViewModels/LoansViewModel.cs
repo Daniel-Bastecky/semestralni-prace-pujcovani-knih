@@ -14,8 +14,7 @@ using System.Windows;
 namespace PujcovaniKnih.ViewModels
 {
     /// <summary>
-    /// ViewModel responsible for managing book loans,
-    /// providing CRUD operations and notifying the UI of changes.
+    /// Manages the logic for the Loans section, including loading, filtering, and CRUD operations.
     /// </summary>
     public class LoansViewModel : INotifyPropertyChanged
     {
@@ -86,7 +85,6 @@ namespace PujcovaniKnih.ViewModels
 
                 if (SelectedLoan.Id == 0)
                 {
-                    // Nová
                     var book = AllBooks.FirstOrDefault(b => b.Id == SelectedLoan.BookId);
                     if (book != null && !book.IsAvailable)
                     {

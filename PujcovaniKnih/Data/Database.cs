@@ -57,6 +57,9 @@ namespace PujcovaniKnih.Data
             createLoansCmd.ExecuteNonQuery();
         }
 
+        /// <summary>
+        /// Retrieves all book records from the database and maps them to a list of Book objects.
+        /// </summary>
         public static List<Book> GetAllBooks()
         {
             var books = new List<Book>();
@@ -119,6 +122,9 @@ namespace PujcovaniKnih.Data
             cmd.ExecuteNonQuery();
         }
 
+        /// <summary>
+        /// Retrieves all customer records from the database and maps them to a list of Customer objects.
+        /// </summary>
         public static List<Customer> GetAllCustomers()
         {
             var customers = new List<Customer>();
@@ -181,6 +187,9 @@ namespace PujcovaniKnih.Data
             cmd.ExecuteNonQuery();
         }
 
+        /// <summary>
+        /// Retrieves all loan records from the database and maps them to a list of Loan objects.
+        /// </summary>
         public static List<Loan> GetAllLoans()
         {
             var loans = new List<Loan>();
@@ -254,7 +263,6 @@ namespace PujcovaniKnih.Data
             string query = "UPDATE Books SET IsAvailable=@IsAvailable WHERE Id=@Id;";
             using var cmd = new SqliteCommand(query, connection);
 
-            // SQLite nemá boolean, používáme 1 pro true a 0 pro false
             cmd.Parameters.AddWithValue("@IsAvailable", isAvailable ? 1 : 0);
             cmd.Parameters.AddWithValue("@Id", bookId);
 
